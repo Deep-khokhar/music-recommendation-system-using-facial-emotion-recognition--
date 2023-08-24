@@ -22,8 +22,8 @@ export default function Homepage() {
                         <div className="row m-3">
                             <h5><p className='text-white' style={{ textAlign: "justify" }}>Lorem ipsum dolor sit amet consectetur adipisicing elit. Et animi in molestias tempore, facere ducimus voluptates laboriosam exercitationem placeat esse saepe explicabo pariatur, sint ex? Fuga provident aut accusamus minus.</p></h5>
                         </div>
-                        <div className="row m-3 mt-5" style={{textAlign:"end"}}>
-                            <div className=" btn w-100">
+                        <div className="row m-3 mt-5 my-text">
+                            <div className=" btn w-100 text-end">
                             <Link  to="/Detect_face"> <button className=''>Scan Your Face Here</button></Link>
                             </div>
                             

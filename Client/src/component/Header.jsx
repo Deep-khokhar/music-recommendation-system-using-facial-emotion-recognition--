@@ -20,7 +20,7 @@ export default function Header() {
                                 <li className="nav-item"><a to="/" alt="" className="nav-link text-black fs-5">About</a></li>
                             </ul>
                         </div>
-                    </header>
+                    </header> 
                 </div>
             </div>
 

@@ -21,9 +21,9 @@ export default function Detect_Face() {
             })
     }
 
-    const takePicture = () =>{
+    const takePicture = () => {
         let width = 500
-        let height = width /(16/9)
+        let height = width / (16 / 9)
         let photo = photoRef.current
         let video = videoRef.current
 
@@ -32,7 +32,13 @@ export default function Detect_Face() {
 
         let ctx = photo.getContext('2d')
 
-        ctx.drawImage(video,0,0,photo.width,photo.height)
+        ctx.drawImage(video, 0, 0, photo.width, photo.height)
+    }
+
+    const clearImage = () => {
+        let photo = photoRef.current
+        let ctx = photo.getContext('2d')
+        ctx.clearRect(0,0,photo.width,photo.height)
     }
 
     useEffect(() => {
@@ -47,7 +53,9 @@ export default function Detect_Face() {
             <video className='container mt-4' ref={videoRef} style={{ height: "500px", marginLeft: "90px" }}></video>
             <div className="btn w-100">
                 <button onClick={takePicture} className=''>Take Picture</button></div>
-                <canvas className='container  w-50 ' style={{marginLeft:"100px"}} ref={photoRef}></canvas>
+            <canvas className='container  w-50 ' style={{ marginLeft: "100px" }} ref={photoRef}></canvas>
+            <div className="btn w-100">
+           <button onClick={clearImage} className=''>Clear Picture</button></div>
         </>
     )
 }

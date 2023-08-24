@@ -34,3 +34,6 @@ html,body{
   background-color: #fff;
 }
 
+.my-text{
+  text-align: end !important;
+}
