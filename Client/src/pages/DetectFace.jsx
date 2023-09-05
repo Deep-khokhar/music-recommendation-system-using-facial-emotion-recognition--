@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react'
 import Header from '../component/Header'
 
-export default function Detect_Face() {
+export default function DetectFace() {
 
     let videoRef = useRef(null)
 

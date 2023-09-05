@@ -7,7 +7,7 @@ export default function Homepage() {
     return (
         <>
             <div>
-                <Navbar />
+                <Navbar hover = "white" hover1="black" hover2="black"/>
                 <div class="row ">
                     <div class="col-7 mt-4 d-flex justify-content-center">
                         <img src={Banner2} alt="" height={600} />
@@ -24,7 +24,7 @@ export default function Homepage() {
                         </div>
                         <div className="row m-3 mt-5 my-text">
                             <div className=" btn w-100 text-end">
-                            <Link  to="/Detect_face"> <button className=''>Scan Your Face Here</button></Link>
+                            <Link  to="/Detectface"> <button className=''>Scan Your Face Here</button></Link>
                             </div>
                             
                         </div>

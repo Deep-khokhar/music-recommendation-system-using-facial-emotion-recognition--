@@ -7,8 +7,8 @@ html,body{
   padding: 0;
   height: 100% !important;
   background: linear-gradient(
-    to top right, 
-    #d01878, #341c54
+    to top right, #341c54, 
+    #d01878
   );
   overflow-x: hidden;
 }
