@@ -83,3 +83,21 @@ export const viewmyProfile = async (req, res) => {
     });
   }
 };
+
+export const logoutUser = async (req, res) => {
+  try {
+    const options = {
+      expires: new Date(Date.now()),
+      httpOnly: true,
+    };
+    res.status(200).cookie("token", null, options).json({
+      success: true,
+      message: "Logged Out",
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};

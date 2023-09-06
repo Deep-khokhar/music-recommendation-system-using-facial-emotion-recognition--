@@ -2,10 +2,17 @@ import React, { useState } from "react";
 import "../CSS/Navbar.css";
 import Logo from "../Images/LOGO.png";
 import { Link } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { toast } from "react-toastify";
+import { logoutUser } from "../actions/User";
 export default function Header() {
   const [tab, setTab] = useState(window.location.pathname);
   const { isAuthenticated, user } = useSelector((state) => state.user);
+  const dispatch = useDispatch();
+  const logoutHandler = () => {
+    dispatch(logoutUser());
+    toast.success("Logged out successfully");
+  };
   return (
     <>
       <div className="main bg-transparent">
@@ -95,11 +102,18 @@ export default function Header() {
                       onClick={() => setTab("/")}
                       alt=""
                       className={`nav-link fs-5 text-black`}
-                      // className={`nav-link fs-5 ${
-                      //   tab === "/" ? "text-white" : "text-black"
-                      // }`}
                     >
                       {user.name}
+                    </Link>
+                  </li>
+                )}
+                {isAuthenticated && (
+                  <li className="nav-item">
+                    <Link
+                      onClick={logoutHandler}
+                      className={`nav-link fs-5  text-black`}
+                    >
+                      Logout
                     </Link>
                   </li>
                 )}
