@@ -56,3 +56,14 @@ export const registerUser = (name, email, password) => async (dispatch) => {
     });
   }
 };
+export const logoutUser = () => async (dispatch) => {
+  try {
+    dispatch({ type: "logoutRequest" });
+
+    await axios.get("/api/v1/user/logout-user");
+
+    dispatch({ type: "logoutSuccess" });
+  } catch (error) {
+    dispatch({ type: "logoutFailure", payload: error.response.data.message });
+  }
+};
