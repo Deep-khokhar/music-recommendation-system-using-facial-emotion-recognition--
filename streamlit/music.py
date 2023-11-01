@@ -14,89 +14,111 @@ hands = mp.solutions.hands
 holis = holistic.Holistic()
 drawing = mp.solutions.drawing_utils
 
-st.header("Emotion Based Music Recommender")
+st.sidebar.title("Navigation")
+app_mode = st.sidebar.selectbox("Select Page", ["Home", "About", "Prediction"])
 
-if "run" not in st.session_state:
-	st.session_state["run"] = "true"
+if app_mode == "Home":
+		st.title("Home Page")
+		st.subheader("Unlock the Power of Emotion: Revolutionizing Music Recommendations with EmotionsTunes")
+		image_path = 'Emotion.jpeg'
+		st.image(image_path, width=700)
 
-try:
-	emotion = np.load("emotion.npy")[0]
-except:
-	emotion=""
+elif app_mode == "About":
+		st.title("About Page")
+		st.subheader("Introduction")
+		st.write("Our system uses real-time facial and hand gesture analysis to understand your emotions as you listen to music. We collect data on facial expressions and hand movements to gauge your emotional response to the music. This data is then processed and used to refine your music recommendations.")
 
-if not(emotion):
-	st.session_state["run"] = "true"
-else:
-	st.session_state["run"] = "false"
+		st.subheader("Our Mission")
+		st.write("At EmotionsTunes, our mission is to enhance your music listening experience. We understand that music is deeply intertwined with our emotions, and we believe that your music should adapt to how you feel. That's why we've created this innovative system to curate playlists and recommendations that resonate with your current emotional state.")
 
-class EmotionProcessor:
-	def recv(self, frame):
-		frm = frame.to_ndarray(format="bgr24")
+		st.subheader("How it Works")
+		st.write("Our system uses real-time facial and hand gesture analysis to understand your emotions as you listen to music. We collect data on facial expressions and hand movements to gauge your emotional response to the music. This data is then processed and used to refine your music recommendations.")
 
-		##############################
-		frm = cv2.flip(frm, 1)
 
-		res = holis.process(cv2.cvtColor(frm, cv2.COLOR_BGR2RGB))
 
-		lst = []
+elif app_mode == "Prediction":
+		st.title("Prediction Page")
+		if "run" not in st.session_state:
+			st.session_state["run"] = "true"
 
-		if res.face_landmarks:
-			for i in res.face_landmarks.landmark:
-				lst.append(i.x - res.face_landmarks.landmark[1].x)
-				lst.append(i.y - res.face_landmarks.landmark[1].y)
+		try:
+			emotion = np.load("emotion.npy")[0]
+		except:
+			emotion=""
 
-			if res.left_hand_landmarks:
-				for i in res.left_hand_landmarks.landmark:
-					lst.append(i.x - res.left_hand_landmarks.landmark[8].x)
-					lst.append(i.y - res.left_hand_landmarks.landmark[8].y)
+		if not(emotion):
+			st.session_state["run"] = "true"
+		else:
+			st.session_state["run"] = "false"
+
+		class EmotionProcessor:
+			def recv(self, frame):
+				frm = frame.to_ndarray(format="bgr24")
+
+				##############################
+				frm = cv2.flip(frm, 1)
+
+				res = holis.process(cv2.cvtColor(frm, cv2.COLOR_BGR2RGB))
+
+				lst = []
+
+				if res.face_landmarks:
+					for i in res.face_landmarks.landmark:
+						lst.append(i.x - res.face_landmarks.landmark[1].x)
+						lst.append(i.y - res.face_landmarks.landmark[1].y)
+
+					if res.left_hand_landmarks:
+						for i in res.left_hand_landmarks.landmark:
+							lst.append(i.x - res.left_hand_landmarks.landmark[8].x)
+							lst.append(i.y - res.left_hand_landmarks.landmark[8].y)
+					else:
+						for i in range(42):
+							lst.append(0.0)
+
+					if res.right_hand_landmarks:
+						for i in res.right_hand_landmarks.landmark:
+							lst.append(i.x - res.right_hand_landmarks.landmark[8].x)
+							lst.append(i.y - res.right_hand_landmarks.landmark[8].y)
+					else:
+						for i in range(42):
+							lst.append(0.0)
+
+					lst = np.array(lst).reshape(1,-1)
+
+					pred = label[np.argmax(model.predict(lst))]
+
+					print(pred)
+					cv2.putText(frm, pred, (50,50),cv2.FONT_ITALIC, 1, (255,0,0),2)
+
+					np.save("emotion.npy", np.array([pred]))
+
+					
+				drawing.draw_landmarks(frm, res.face_landmarks, holistic.FACEMESH_TESSELATION,
+										landmark_drawing_spec=drawing.DrawingSpec(color=(0,0,255), thickness=-1, circle_radius=1),
+										connection_drawing_spec=drawing.DrawingSpec(thickness=1))
+				drawing.draw_landmarks(frm, res.left_hand_landmarks, hands.HAND_CONNECTIONS)
+				drawing.draw_landmarks(frm, res.right_hand_landmarks, hands.HAND_CONNECTIONS)
+
+
+				##############################
+
+				return av.VideoFrame.from_ndarray(frm, format="bgr24")
+
+		lang = st.text_input("Language")
+		singer = st.text_input("singer")
+
+		if lang and singer and st.session_state["run"] != "false":
+			webrtc_streamer(key="key", desired_playing_state=True,
+						video_processor_factory=EmotionProcessor)
+
+		btn = st.button("Recommend me songs")
+
+		if btn:
+			if not(emotion):
+				st.warning("Please let me capture your emotion first")
+				st.session_state["run"] = "true"
 			else:
-				for i in range(42):
-					lst.append(0.0)
-
-			if res.right_hand_landmarks:
-				for i in res.right_hand_landmarks.landmark:
-					lst.append(i.x - res.right_hand_landmarks.landmark[8].x)
-					lst.append(i.y - res.right_hand_landmarks.landmark[8].y)
-			else:
-				for i in range(42):
-					lst.append(0.0)
-
-			lst = np.array(lst).reshape(1,-1)
-
-			pred = label[np.argmax(model.predict(lst))]
-
-			print(pred)
-			cv2.putText(frm, pred, (50,50),cv2.FONT_ITALIC, 1, (255,0,0),2)
-
-			np.save("emotion.npy", np.array([pred]))
-
-			
-		drawing.draw_landmarks(frm, res.face_landmarks, holistic.FACEMESH_TESSELATION,
-								landmark_drawing_spec=drawing.DrawingSpec(color=(0,0,255), thickness=-1, circle_radius=1),
-								connection_drawing_spec=drawing.DrawingSpec(thickness=1))
-		drawing.draw_landmarks(frm, res.left_hand_landmarks, hands.HAND_CONNECTIONS)
-		drawing.draw_landmarks(frm, res.right_hand_landmarks, hands.HAND_CONNECTIONS)
-
-
-		##############################
-
-		return av.VideoFrame.from_ndarray(frm, format="bgr24")
-
-lang = st.text_input("Language")
-singer = st.text_input("singer")
-
-if lang and singer and st.session_state["run"] != "false":
-	webrtc_streamer(key="key", desired_playing_state=True,
-				video_processor_factory=EmotionProcessor)
-
-btn = st.button("Recommend me songs")
-
-if btn:
-	if not(emotion):
-		st.warning("Please let me capture your emotion first")
-		st.session_state["run"] = "true"
-	else:
-		# webbrowser.open(f"https://www.youtube.com/results?search_query={lang}+{emotion}+song+{singer}")
-		webbrowser.open(f"https://open.spotify.com/search/{lang}%20{emotion}%20{singer}")
-		np.save("emotion.npy", np.array([""]))
-		st.session_state["run"] = "false"
+				# webbrowser.open(f"https://www.youtube.com/results?search_query={lang}+{emotion}+song+{singer}")
+				webbrowser.open(f"https://open.spotify.com/search/{lang}%20{emotion}%20{singer}")
+				np.save("emotion.npy", np.array([""]))
+				st.session_state["run"] = "false"

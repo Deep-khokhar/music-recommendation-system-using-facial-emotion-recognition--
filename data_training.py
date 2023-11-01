@@ -9,7 +9,6 @@ from sklearn.metrics import confusion_matrix
 
 import matplotlib.pyplot as plt
 import seaborn as sn
-
  
 is_init = False
 size = -1
@@ -70,7 +69,7 @@ model = Model(inputs=ip, outputs=op)
 # ])
 model.compile(optimizer='adam', loss="categorical_crossentropy", metrics=['acc'])
 
-tb_callback1 = tf.keras.callbacks.TensorBoard(log_dir="./logs", histogram_freq=1)
+tb_callback1 = tf.keras.callbacks.TensorBoard(log_dir="./tf_logs", histogram_freq=1)
 
 model.fit(X, y, epochs=60, callbacks=[tb_callback1])
 loss, accuracy = model.evaluate(X, y)
@@ -87,19 +86,6 @@ sn.heatmap(confusion_mtx, annot=True, fmt='d', cmap='Blues', xticklabels=label, 
 plt.xlabel('Predicted')
 plt.ylabel('True')
 plt.show()
-
-# y_pred = model.predict(X_new)
-# y_pred_classes = np.argmax(y_pred, axis=1)
-
-# Create a histogram of predicted emotions
-# plt.figure(figsize=(10, 6))
-# plt.hist(y_pred_classes, bins=len(label), align='left', rwidth=0.8, alpha=0.75, color='skyblue', edgecolor='black')
-# plt.xticks(range(len(label)), label, rotation=45)
-# plt.xlabel('Emotion')
-# plt.ylabel('Frequency')
-# plt.title('Histogram of Predicted Emotions')
-# plt.show()
-
 
 model.save("model.h5")
 np.save("labels.npy", np.array(label))
